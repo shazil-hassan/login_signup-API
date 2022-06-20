@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from django.contrib.auth import authenticate
 
 from .models import *
-from .serializers import StudentSerializer,Studentlogin_Serializer
+from .serializers import StudentSerializer,Studentlogin_Serializer,SendPasswordResetEmailSerializer
 
 # Create your views here.
 
@@ -30,3 +30,14 @@ class Studentlogin(APIView):
             else:
                 return Response(serializer.errors)
         return Response({'msg':'InValid Information'})
+
+
+
+class SendPasswordResetEmailView(APIView):
+
+    def post(self,request,format=None):
+        serializer=SendPasswordResetEmailSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response({'msg':'password reset link send your email Id'})
+        return Response({'msg':'InValid Information'})    
