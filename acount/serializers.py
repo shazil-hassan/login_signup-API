@@ -6,39 +6,33 @@ from django.contrib.auth.password_validation import validate_password
 
 
 class StudentSerializer(serializers.ModelSerializer):
+    confirm_password = serializers.CharField()
+
     class Meta:
-        password=serializers.CharField(style={'input_type':'password'}, write_only=True,validators=[validate_password])
-        password2=serializers.CharField(style={'input_type':'password'},write_only=True)
-        
-        model=User
-        fields=['username','email','password','password2','phone','age']
-        # extra_kwargs={'password':{'write_only':True}}
+        model = User
+        fields=['username','email','password','confirm_password','phone','age']
+        extra_kwargs={'confirm_password':{'write_only':True}, 'password':{'write_only':True}}
+    
 
-    def validate(self, attrs):
-        password=attrs.get('password')
-        password2=attrs.get('password2')
-        if password != password2 :
-            raise serializers.ValidationError("Password does not match")
-        return attrs   
+    def validate(self, data):
+        if not data.get('password') or not data.get('confirm_password'):
+            raise serializers.ValidationError("Please enter a password and "
+                                              "confirm it.")
+        if data.get('password') != data.get('confirm_password'):
+            raise serializers.ValidationError("Those passwords don't match.")
+        return data
 
-    def create(self, validated_data):
-        try:
-            user = User.objects.create(
-                username=validated_data['username'],
-                email=validated_data['email'],
-                phone=validated_data['phone'],
-                age=validated_data['age']
-            )
-
-        
-            user.set_password(validated_data['password'])
-            user.save()
-
-            return user
-        except Exception as e:
-            return e
-            
-                
+    def save(self):
+        user = User(
+            username = self.validated_data['username'],
+            email=self.validated_data['email'],
+            phone=self.validated_data['phone'],
+            age=self.validated_data['age']
+        )
+        password = self.validated_data['password']
+        user.set_password(password)
+        user.save()
+        return user
 
 
 class Studentlogin_Serializer(serializers.ModelSerializer):
