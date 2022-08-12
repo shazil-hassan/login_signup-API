@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_rest_passwordreset',
     'rest_framework_simplejwt',
     'corsheaders',
     'acount',
@@ -59,7 +60,7 @@ ROOT_URLCONF = 'Authentiction_API.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -133,9 +134,20 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static")
+]
 
 AUTH_USER_MODEL = "acount.User"
 
+# mail sending
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+MAILER_EMAIL_BACKEND = EMAIL_BACKEND 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'shazilkazmi110@gmail.com'
+EMAIL_HOST_PASSWORD = 'shazilshah110'
+EMAIL_USE_TLS = True
 
 
 CORS_ALLOWED_ORIGINS = [
